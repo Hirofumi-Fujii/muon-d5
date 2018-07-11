@@ -1,0 +1,77 @@
+coinimga.txt (2017-05-25)
+
+このプログラムは三つの事象選択論理で処理した結果を
+出力する。
+
+[使用法] coinimga [options] list-filename
+  option
+  -maxhits n    各層のヒット数の最大値を n までとする。
+　　　　　　　　0 は無制限として扱う。
+　　　　　　　　指定しなかった場合は 0 が指定されたものとする。
+　-out outname　出力ファイル名の接頭名を与える。
+　　　　　　　　指定しなかった場合は coinimga が指定されたものとする。
+
+[事象選択論理]
+事象選択論理 0:
+　　　前検出器 X：2層のうち少なくとも1層が single cluster
+かつ　前検出器 Y：2層のうち少なくとも1層が single cluster
+かつ　後検出器 X：2層のうち少なくとも1層が single cluster
+かつ　後検出器 Y：2層のうち少なくとも1層が single cluster
+
+事象選択論理 1:
+　　　前検出器 X：2層ともにヒットがある
+かつ　前検出器 Y：2層ともにヒットがある
+かつ　後検出器 X：2層ともにヒットがある
+かつ　後検出器 Y：2層ともにヒットがある
+条件を満たし、かつ上記 0 の条件を満たす。
+（この論理は、事象選択論理 0: のうち、信号の無い層が
+あった事象を排除する。）
+
+事象選択論理 2:
+　　　前検出器 X：2層ともに single cluster
+かつ　前検出器 Y：2層ともに single cluster
+かつ　後検出器 X：2層ともに single cluster
+かつ　後検出器 Y：2層ともに single cluster
+（この論理は事象選択論理 1: を自動的に満たす）
+
+各層での位置は多重ヒットの場合は平均値を
+用いる。
+2層ともに single cluster である場合は、両層の値の
+平均値を用いる。
+
+[出力]
+　出力は html (hyper text markup language)
+形式での単一 Web ページファイルと、その構成要素
+ファイルとして表ファイルと、画像ファイルが
+出力される。
+表形式は csv (comma separated value)形式である。
+画像は非圧縮の png 形式である。
+ファイル名は起動 option で指定された出力接頭名
+で出力される。
+
+例えば、出力接頭名が coinimga であれば、
+　coinimga.html   　　Web ページファイル
+　coinimga-log.csv 　　処理したファイルの事象率等を示す
+　coinimga-0.csv    　事象選択論理 0: による前検出器での XY 分布
+  coinimga-1.csv    　事象選択論理 0: による後検出器での XY 分布
+　coinimga-2.csv    　事象選択論理 1: による前検出器での XY 分布
+  coinimga-3.csv    　事象選択論理 1: による後検出器での XY 分布
+　coinimga-4.csv    　事象選択論理 2: による前検出器での XY 分布
+  coinimga-5.csv    　事象選択論理 2: による後検出器での XY 分布
+　coinimga-6.csv    　事象選択論理 0: による dx-dy 分布
+　coinimga-7.csv   　（同上 histogram binning 時に端数処理を行ったもの
+　coinimga-8.csv    　事象選択論理 1: による dx-dy 分布
+　coinimga-9.csv   　（同上 histogram binning 時に端数処理を行ったもの）
+　coinimga-10.csv   　事象選択論理 2: による dx-dy 分布
+　coinimga-11.csv  　（同上 histogram binning 時に端数処理を行ったもの）
+および -0 から -11 に対応する画像ファイル（ファイル名は上記 .csv ファイル
+名で拡張子を .png に置き換えたもの）が出力される。
+
+-------
+rate selection に対する考察
+1pass で rate selection を行うには、prvHist を用意して、
+1) run の最初で prvHist = curHist
+2) curHist に処理結果を反映
+3) rate が range 内であれば、1) に戻る
+4) そうでなければ、curHist = prvHist として 2) へ
+（　1) へ戻ってもよいが、copy が一度余分に発生する）
